@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZhengchengwenjianDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.zhengchengwenjian_name as zhengchengwenjianName
+        ,a.zhengchengwenjian_photo as zhengchengwenjianPhoto
+        ,a.zhengchengwenjian_file as zhengchengwenjianFile
+        ,a.zhengchengwenjian_content as zhengchengwenjianContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZhengchengwenjianView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM zhengchengwenjian  a
+
+        <where>
+            <if test=" params.zhengchengwenjianName != '' and params.zhengchengwenjianName != null and params.zhengchengwenjianName != 'null' ">
+                and a.zhengchengwenjian_name like CONCAT('%',#{params.zhengchengwenjianName},'%')
+            </if>
+            <if test=" params.zhengchengwenjianContent != '' and params.zhengchengwenjianContent != null and params.zhengchengwenjianContent != 'null' ">
+                and a.zhengchengwenjian_content like CONCAT('%',#{params.zhengchengwenjianContent},'%')
+            </if>
+
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

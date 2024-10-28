@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.FalvgaguiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.falvgagui_name as falvgaguiName
+        ,a.falvgagui_photo as falvgaguiPhoto
+        ,a.falvgagui_video as falvgaguiVideo
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.falvgagui_content as falvgaguiContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.FalvgaguiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM falvgagui  a
+
+        <where>
+            <if test=" params.falvgaguiName != '' and params.falvgaguiName != null and params.falvgaguiName != 'null' ">
+                and a.falvgagui_name like CONCAT('%',#{params.falvgaguiName},'%')
+            </if>
+            <if test=" params.falvgaguiVideo != '' and params.falvgaguiVideo != null and params.falvgaguiVideo != 'null' ">
+                and a.falvgagui_video like CONCAT('%',#{params.falvgaguiVideo},'%')
+            </if>
+            <if test="params.zanNumberStart != null">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumberStart != null">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test=" params.falvgaguiContent != '' and params.falvgaguiContent != null and params.falvgaguiContent != 'null' ">
+                and a.falvgagui_content like CONCAT('%',#{params.falvgaguiContent},'%')
+            </if>
+
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

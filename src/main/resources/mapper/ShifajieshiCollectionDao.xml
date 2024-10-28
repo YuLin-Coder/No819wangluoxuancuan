@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ShifajieshiCollectionDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.shifajieshi_id as shifajieshiId
+        ,a.yonghu_id as yonghuId
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ShifajieshiCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,shifajieshi.shifajieshi_name as shifajieshiName
+        ,shifajieshi.shifajieshi_photo as shifajieshiPhoto
+        ,shifajieshi.shifajieshi_video as shifajieshiVideo
+        ,shifajieshi.zan_number as zanNumber
+        ,shifajieshi.cai_number as caiNumber
+        ,shifajieshi.shifajieshi_content as shifajieshiContent
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_photo as yonghuPhoto
+
+        FROM shifajieshi_collection  a
+        left JOIN shifajieshi shifajieshi ON a.shifajieshi_id = shifajieshi.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.shifajieshiId != null">
+                and a.shifajieshi_id = #{params.shifajieshiId}
+            </if>
+            <if test="params.yonghuId != null">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+
+            <if test=" params.shifajieshiName != '' and params.shifajieshiName != null and params.shifajieshiName != 'null' ">
+                and shifajieshi.shifajieshi_name like CONCAT('%',#{params.shifajieshiName},'%')
+            </if>
+            <if test=" params.shifajieshiVideo != '' and params.shifajieshiVideo != null and params.shifajieshiVideo != 'null' ">
+                and shifajieshi.shifajieshi_video like CONCAT('%',#{params.shifajieshiVideo},'%')
+            </if>
+            <if test="params.zanNumberStart != null ">
+                <![CDATA[  and shifajieshi.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null ">
+                <![CDATA[  and shifajieshi.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumberStart != null ">
+                <![CDATA[  and shifajieshi.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null ">
+                <![CDATA[  and shifajieshi.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test=" params.shifajieshiContent != '' and params.shifajieshiContent != null and params.shifajieshiContent != 'null' ">
+                and shifajieshi.shifajieshi_content like CONCAT('%',#{params.shifajieshiContent},'%')
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
